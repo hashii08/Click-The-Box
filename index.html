@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Click the Box Game</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .game-container {
+      text-align: center;
+      width: 90%;
+      max-width: 600px;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+      height: 400px;
+    }
+
+    #box {
+      width: 60px;
+      height: 60px;
+      background-color: #3498db;
+      border-radius: 8px;
+      position: absolute;
+      top: 50px;
+      left: 50px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      display: none;
+      z-index: 1;
+    }
+
+    #gameover,
+    #startscreen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      flex-direction: column;
+    }
+
+    #gameover {
+      background: rgba(255, 0, 0, 0.8);
+      display: none;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      background-color: #3498db;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div id="startscreen">
+      <div>Click to Start</div>
+      <button id="startBtn">Start Game</button>
+    </div>
+
+    <div id="gameover">Game Over</div>
+
+    <h1>Click the Box!</h1>
+    <p>Score: <span id="score">0</span></p>
+    <div id="box"></div>
+  </div>
+
+  <script>
+    const box = document.getElementById("box");
+    const scoreEl = document.getElementById("score");
+    const gameOverEl = document.getElementById("gameover");
+    const startScreen = document.getElementById("startscreen");
+    const startBtn = document.getElementById("startBtn");
+
+    let score = 0;
+    let timeout;
+
+    function getRandomPosition() {
+      const container = document.querySelector(".game-container");
+      const maxX = container.clientWidth - box.clientWidth;
+      const maxY = container.clientHeight - box.clientHeight;
+      const randomX = Math.floor(Math.random() * maxX);
+      const randomY = Math.floor(Math.random() * maxY);
+      return { x: randomX, y: randomY };
+    }
+
+    function startTimer() {
+      clearTimeout(timeout);
+      const delay = Math.random() * 2000 + 3000; // 3 to 5 seconds
+      timeout = setTimeout(() => {
+        showGameOver();
+      }, delay);
+    }
+
+    function moveBox() {
+      const { x, y } = getRandomPosition();
+      box.style.left = `${x}px`;
+      box.style.top = `${y}px`;
+      box.style.display = "block";
+      startTimer();
+    }
+
+    function showGameOver() {
+      box.style.display = "none";
+      gameOverEl.style.display = "flex";
+      clearTimeout(timeout);
+      setTimeout(() => {
+        resetGame();
+      }, 2000);
+    }
+
+    function resetGame() {
+      score = 0;
+      scoreEl.textContent = score;
+      gameOverEl.style.display = "none";
+      box.style.display = "none";
+      startScreen.style.display = "flex";
+    }
+
+    function startGame() {
+      startScreen.style.display = "none";
+      score = 0;
+      scoreEl.textContent = score;
+      moveBox();
+    }
+
+    box.addEventListener("click", () => {
+      score++;
+      scoreEl.textContent = score;
+      moveBox();
+    });
+
+    startBtn.addEventListener("click", startGame);
+  </script>
+</body>
+</html>
